@@ -3,3 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 setup.py
+MANIFEST.in
+*.egg-info/dependency_links.txt
+dist/
+*.egg-info/SOURCES.txt
+*.egg-info/top_level.txt
+*.egg-info/PKG-INFO
