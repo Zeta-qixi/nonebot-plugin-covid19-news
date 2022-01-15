@@ -2,7 +2,6 @@
 __pycache__/
 *.py[cod]
 *$py.class
-setup.py
 MANIFEST.in
 *.egg-info/dependency_links.txt
 dist/
