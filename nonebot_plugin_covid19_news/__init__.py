@@ -29,5 +29,5 @@ async def _(bot: Bot, event: MessageEvent, state: T_State):
         elif kw == '疫情':
             await city_news.finish(message=f"{NewsBot.time}\n{city.main_info}")
     else:
-        await city_news.finish(message="只限查询国内城市或你地理没学好")
+        await city_news.finish(message="查询的城市不存在或存在别名")
 

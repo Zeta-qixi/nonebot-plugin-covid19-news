@@ -5,7 +5,7 @@ from setuptools import setup
 filepath = './README.md'
 setup(
     name='nonebot-plugin-covid19-news',
-    version='0.1.4',
+    version='0.1.5',
     author='Zeta',
     author_email='',
     long_description=open(filepath, encoding='utf-8').read(),
