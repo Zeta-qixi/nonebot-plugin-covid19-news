@@ -15,7 +15,7 @@ async def update():
     if NewsBot.update_data():
         logger.info(f"[疫情数据更新]{NewsBot.time}")
 
-city_news = on_regex('(.*)(疫情.*)', block=True)
+city_news = on_regex(r'^(.{0,6})(疫情.{0,4})', block=True)
 # city_policy = on_regex('(.*)(疫情政策)', block=True)
 
 @city_news.handle()
