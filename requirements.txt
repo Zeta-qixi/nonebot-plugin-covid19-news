@@ -1,1 +1,2 @@
-requests
+nonebot-adapter-cqhttp==2.0.0a16
+requests==2.26.0
