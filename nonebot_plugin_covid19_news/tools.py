@@ -1,5 +1,5 @@
 import requests
-from typing import Dict
+from typing import Dict, List
 import json
 
 
@@ -10,8 +10,7 @@ def set_pid():
     res = resp.json()
 
     for province in res['result']:
-        citys = province.get('list')
-        if citys:
+        if citys := province.get('list'):
             for city in citys:
                 id = city['id']
                 name = city['name']
@@ -26,14 +25,6 @@ def get_policy(id):
     res_ = resp.json()
     assert res_['message'] == 'success'
     data = res_['result']['data'][0]
-
-    # data['leave_policy_date']
-    # data['leave_policy']
-    
-    # data['back_policy_date']
-    # data['back_policy']
-
-    # data['poi_list']  # 风险区域
     
     msg = f"出行({data['leave_policy_date']})\n{data['leave_policy']}\n\
 ------\n\
@@ -57,6 +48,7 @@ class Area():
     @property
     def main_info(self):
         return (f"{self.name}({self.grade})\n今日新增: {self.today['confirm']}\n目前确诊: {self.total['nowConfirm']}")
+
 
 class AreaList(Dict):
     def add(self, data):
@@ -88,8 +80,7 @@ class NewsData:
                         get_Data(i)
 
                 if isinstance(data, dict):
-                    area_ = data.get('children')
-                    if area_:
+                    if area_:=data.get('children'):
                         get_Data(area_)
 
                     self.data.add(Area(data))

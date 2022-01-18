@@ -2,13 +2,13 @@
 # coding: utf-8
 
 from setuptools import setup
-filepath = './README.md'
+
 setup(
     name='nonebot-plugin-covid19-news',
-    version='0.1.5',
+    version='0.1.7',
     author='Zeta',
     author_email='',
-    long_description=open(filepath, encoding='utf-8').read(),
+    long_description="https://github.com/Zeta-qixi/nonebot-plugin-covid19-news",
     license="MIT Licence",
     url='https://github.com/Zeta-qixi/nonebot-plugin-covid19-news/',
     description='nonebot_plugin about covid-19 news',

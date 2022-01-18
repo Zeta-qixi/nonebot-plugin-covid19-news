@@ -8,3 +8,4 @@ dist/
 *.egg-info/SOURCES.txt
 *.egg-info/top_level.txt
 *.egg-info/PKG-INFO
+test.py
