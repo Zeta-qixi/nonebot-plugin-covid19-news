@@ -1,10 +1,8 @@
-
 from nonebot import on_regex, on_command, get_bot
 from nonebot.adapters.cqhttp.bot import Bot
 from nonebot.adapters.cqhttp.event import  MessageEvent
 from nonebot.typing import T_State
 from nonebot import require, logger
-from collections import  defaultdict
 from .data_load import DataLoader
 from .tools import NewsData
 
@@ -72,12 +70,12 @@ async def update():
                 city = NewsBot.data.get(c)
 
                 # 判定是否为更新后信息
-                if city_.today['isUpdated']:
+                if city.today['isUpdated']:
                     # 判定是否未推送
                     
                     if PUSH.get((gid, c), True):
                         PUSH[(gid, c)] = False
-                        await get_bot().send_group_msg(group_id = int(gid), message= '关注城市疫情变化\n' + city_.main_info)
+                        await get_bot().send_group_msg(group_id = int(gid), message= '关注城市疫情变化\n' + city.main_info)
                 
                 else:
                     PUSH[(gid, c)] = True
