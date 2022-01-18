@@ -10,3 +10,4 @@ dist/
 *.egg-info/PKG-INFO
 test.py
 nonebot_plugin_covid19_news/data.*
+nonebot_plugin_covid19_news/data
