@@ -5,7 +5,7 @@ from setuptools import setup
 
 setup(
     name='nonebot-plugin-covid19-news',
-    version='0.2.0b',
+    version='0.2.2',
     author='Zeta',
     author_email='',
     long_description="https://github.com/Zeta-qixi/nonebot-plugin-covid19-news",
