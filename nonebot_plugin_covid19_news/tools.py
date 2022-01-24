@@ -10,7 +10,8 @@ def set_pid():
     res = resp.json()
 
     for province in res['result']:
-        if citys := province.get('list'):
+        citys = province.get('list')
+        if citys:
             for city in citys:
                 id = city['id']
                 name = city['name']
@@ -80,7 +81,8 @@ class NewsData:
                         get_Data(i)
 
                 if isinstance(data, dict):
-                    if area_:=data.get('children'):
+                    area_ = data.get('children')
+                    if area_:
                         get_Data(area_)
 
                     self.data.add(Area(data))

@@ -37,7 +37,8 @@ city_news = on_regex(r'^(.{0,6})(疫情.{0,4})', block=True, priority=10)
 async def _(bot: Bot, event: MessageEvent, state: T_State = State()):
     city_name, kw = state['_matched_groups']
 
-    if city:= NewsBot.data.get(city_name):
+    city = NewsBot.data.get(city_name)
+    if city:
         if kw == '疫情政策':
             await city_news.finish(message=city.policy)
         elif kw == '疫情':
