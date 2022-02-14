@@ -13,6 +13,6 @@ setup(
     url='https://github.com/Zeta-qixi/nonebot-plugin-covid19-news/',
     description='nonebot_plugin about covid-19 news',
     packages=['nonebot_plugin_covid19_news'],
-    install_requires=[],
+    install_requires=requirements,
 
 )
