@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import readline
 from setuptools import setup
+requirements = [r.strip() for r in open("requirements.txt", 'r', encoding='utf-8').readlines()]
 
 setup(
     name='nonebot-plugin-covid19-news',
-    version='0.2.2.5',
+    version='0.2.2.5.2',
     author='Zeta',
     author_email='',
     long_description="https://github.com/Zeta-qixi/nonebot-plugin-covid19-news",
