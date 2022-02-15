@@ -1,5 +1,4 @@
 nonebot2>=2.0.0b1
 nonebot-adapter-cqhttp>=2.0.0b1
-nonebot2
 requests==2.26.0
 nonebot-plugin-apscheduler==0.1.2

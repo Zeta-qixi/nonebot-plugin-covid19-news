@@ -15,9 +15,12 @@ NewsBot = NewsData()
 '''
 
  指令:
- #add_focus   #city_news
+ # follow   
+ # unfollow
+ # city_news
 
 '''
+
 follow = on_command("关注疫情", priority=5, block=True)
 @follow.handle()
 async def _(bot: Bot, event: MessageEvent, state: T_State = State(), city: Message=CommandArg()):
@@ -30,7 +33,8 @@ async def _(bot: Bot, event: MessageEvent, state: T_State = State(), city: Messa
     else:
         await follow.finish(message=f"添加失败")
 
-unfollow = on_command("取消疫情", priority=5)
+
+unfollow = on_command("取消疫情", priority=5, block=True)
 @unfollow.handle()
 async def _(bot: Bot, event: MessageEvent, state: T_State = State(), city: Message=CommandArg()):
     city = city.extract_plain_text()
@@ -42,8 +46,9 @@ async def _(bot: Bot, event: MessageEvent, state: T_State = State(), city: Messa
     else:
         await unfollow.finish(message=f"取消失败")
 
-city_news = on_regex(r'^(.{0,6})(疫情.{0,4})', block=True, priority=10)
 
+
+city_news = on_regex(r'^(.{0,6})(疫情.{0,4})', block=True, priority=10)
 @city_news.handle()
 async def _(bot: Bot, event: MessageEvent, state: T_State = State()):
     city_name, kw = state['_matched_groups']
