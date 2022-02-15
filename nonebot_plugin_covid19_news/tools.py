@@ -19,19 +19,27 @@ def set_pid():
 
 set_pid()
 
-
-def get_policy(id):
+def citypolicy_info(id):
     url_get_policy = f"https://r.inews.qq.com/api/trackmap/citypolicy?&city_id={id}"
     resp = requests.get(url_get_policy)
     res_ = resp.json()
     assert res_['message'] == 'success'
-    data = res_['result']['data'][0]
-    
+    return (res_['result']['data'][0])
+
+def get_policy(id):
+
+    data = citypolicy_info(id)    
     msg = f"出行({data['leave_policy_date']})\n{data['leave_policy']}\n\
 ------\n\
 进入({data['back_policy_date']})\n{data['back_policy']}"
-
     return (msg)
+
+def get_city_poi_list(id):
+
+    data = citypolicy_info(id)['poi_list']
+    t = {'0':'🟢低风险','1':'🟡中风险', '2':'🔴高风险'}   
+    list_ = [f"{t[i['type']]} {i['area'].split(i['city'])[-1]}" for i in data]
+    return '\n\n'.join(list_) if data else "🟢全部低风险"
 
 
 class Area():
@@ -45,6 +53,10 @@ class Area():
     @property
     def policy(self):
         return get_policy(POLICY_ID.get(self.name))
+
+    @property
+    def poi_list(self):
+        return get_city_poi_list(POLICY_ID.get(self.name))
 
     @property
     def main_info(self):

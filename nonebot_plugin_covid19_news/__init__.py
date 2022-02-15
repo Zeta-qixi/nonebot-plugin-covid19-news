@@ -1,3 +1,4 @@
+from ast import alias
 from .data_load import DataLoader
 from nonebot import on_regex, on_command, get_bot
 from nonebot.adapters.onebot.v11.bot import Bot
@@ -18,6 +19,7 @@ NewsBot = NewsData()
  # follow   
  # unfollow
  # city_news
+ # city_poi_list
 
 '''
 
@@ -34,7 +36,7 @@ async def _(bot: Bot, event: MessageEvent, state: T_State = State(), city: Messa
         await follow.finish(message=f"添加失败")
 
 
-unfollow = on_command("取消疫情", priority=5, block=True)
+unfollow = on_command("取消疫情", priority=5, block=True, aliases={"取消关注疫情", "取消推送疫情"})
 @unfollow.handle()
 async def _(bot: Bot, event: MessageEvent, state: T_State = State(), city: Message=CommandArg()):
     city = city.extract_plain_text()
@@ -54,15 +56,24 @@ async def _(bot: Bot, event: MessageEvent, state: T_State = State()):
     city_name, kw = state['_matched_groups']
 
     city = NewsBot.data.get(city_name)
+
+    if kw in ['疫情政策', '疫情']:
+        if city:
+            if kw == '疫情政策':
+                await city_news.finish(message=city.policy)
+            else:
+                await city_news.finish(message=f"{NewsBot.time}\n{city.main_info}")
+        else:
+            await city_news.finish(message="查询的城市不存在或存在别名")
+
+
+city_news = on_regex(r'^(.{0,6})(风险地区)', block=True, priority=10)
+@city_news.handle()
+async def _(bot: Bot, event: MessageEvent, state: T_State = State()):
+    city_name, _ = state['_matched_groups']
+    city = NewsBot.data.get(city_name)
     if city:
-        if kw == '疫情政策':
-            await city_news.finish(message=city.policy)
-        elif kw == '疫情':
-            await city_news.finish(message=f"{NewsBot.time}\n{city.main_info}")
-    else:
-        await city_news.finish(message="查询的城市不存在或存在别名")
-
-
+        await city_news.finish(message=city.poi_list)
 
 '''
 
