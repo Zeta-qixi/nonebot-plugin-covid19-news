@@ -48,6 +48,7 @@ class Area():
         self.today = data['today']
         self.total = data['total']
         self.grade = data['total'].get('grade', '风险未确认')
+        self.wzz_add = data['today'].get('wzz_add', 0)
         self.children = data.get('children', None)
 
     @property
@@ -60,7 +61,8 @@ class Area():
 
     @property
     def main_info(self):
-        return (f"{self.name}({self.grade})\n今日新增: {self.today['confirm']}\n目前确诊: {self.total['nowConfirm']}")
+        return (f"{self.name}({self.grade})\n新增确诊: {self.today['confirm']}\n新增无症状: {self.wzz_add}\n目前确诊: {self.total['nowConfirm']}")
+
 
 
 class AreaList(Dict):
