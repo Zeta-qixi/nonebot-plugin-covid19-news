@@ -1,46 +1,7 @@
 import requests
 from typing import Dict, List
 import json
-
-
-POLICY_ID = {}
-def set_pid():
-    url_city_list = 'https://r.inews.qq.com/api/trackmap/citylist?'
-    resp = requests.get(url_city_list)
-    res = resp.json()
-
-    for province in res['result']:
-        citys = province.get('list')
-        if citys:
-            for city in citys:
-                id = city['id']
-                name = city['name']
-                POLICY_ID[name] = id
-
-set_pid()
-
-def citypolicy_info(id):
-    url_get_policy = f"https://r.inews.qq.com/api/trackmap/citypolicy?&city_id={id}"
-    resp = requests.get(url_get_policy)
-    res_ = resp.json()
-    assert res_['message'] == 'success'
-    return (res_['result']['data'][0])
-
-def get_policy(id):
-
-    data = citypolicy_info(id)    
-    msg = f"出行({data['leave_policy_date']})\n{data['leave_policy']}\n\
-------\n\
-进入({data['back_policy_date']})\n{data['back_policy']}"
-    return (msg)
-
-def get_city_poi_list(id):
-
-    data = citypolicy_info(id)['poi_list']
-    t = {'0':'🟢低风险','1':'🟡中风险', '2':'🔴高风险'}   
-    list_ = [f"{t[i['type']]} {i['area'].split(i['city'])[-1]}" for i in data]
-    return '\n\n'.join(list_) if data else "🟢全部低风险"
-
+from .policy import POLICY_ID, get_city_poi_list, get_policy
 
 class Area():
     def __init__(self, data):
@@ -49,6 +10,8 @@ class Area():
         self.total = data['total']
         self.grade = data['total'].get('grade', '风险未确认')
         self.wzz_add = data['today'].get('wzz_add', 0)
+
+        self.all_add = self.today['confirm'] + self.wzz_add
         self.children = data.get('children', None)
 
     @property
