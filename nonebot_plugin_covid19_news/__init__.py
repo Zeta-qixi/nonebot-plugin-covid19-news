@@ -129,10 +129,10 @@ if (getattr(get_driver().config, 'covid19', None)):
     if convid_config.get('notice') in ['true', "True"]:
         async def notice():
             res = []
-            filter_city = convid_config.get('filter',[]) + ['香港', '台湾']
+            filter_city = convid_config.get('filter',[]) + ['香港', '台湾', '中国']
             for _, city in list(NewsBot.data.items()):
                 if city.all_add >= convid_config.get('red-line', 500): 
-                  if city.name not in filter_city and (not city.children):
+                  if city.name not in filter_city:
                     res.append(f"{city.main_info}")
             
             logger.info(len(res))
