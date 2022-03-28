@@ -1,6 +1,6 @@
 from ast import alias
 from .data_load import DataLoader
-from nonebot import on_regex, on_command, get_bot
+from nonebot import on_regex, on_command, get_bot, get_driver
 from nonebot.adapters.onebot.v11.bot import Bot
 from nonebot.adapters.onebot.v11.message import Message
 from nonebot.adapters.onebot.v11.event import  MessageEvent
@@ -12,7 +12,7 @@ from .tools import NewsData
 DL = DataLoader('data.json')
 NewsBot = NewsData()
 
-
+        
 '''
 
  指令:
@@ -123,3 +123,31 @@ async def update():
                     PUSH[(gid, c)] = True
 
 
+
+if (getattr(get_driver().config, 'covid19', None)):
+    convid_config = get_driver().config.covid19
+    if convid_config.get('notice') in ['true', "True"]:
+        async def notice():
+            res = []
+            filter_city = convid_config.get('filter',[]) + ['香港', '台湾']
+            for _, city in list(NewsBot.data.items()):
+                if city.all_add >= convid_config.get('red-line', 500): 
+                  if city.name not in filter_city and (not city.children):
+                    res.append(f"{city.main_info}")
+            
+            logger.info(len(res))
+            if res:
+                message = '⚠️' + '\n\n'.join(res)
+
+                group_list = convid_config.get('group')
+
+                if group_list == 'all':
+                    group = await get_bot().get_group_list()
+                    group_list = [ g['group_id'] for g in group ]
+
+                for gid in group_list:
+                    await get_bot().send_group_msg(group_id=gid, message=message)
+
+        scheduler.add_job(notice, "cron", hour="11",minute="30" ,id="covid19_notice")
+                
+             
