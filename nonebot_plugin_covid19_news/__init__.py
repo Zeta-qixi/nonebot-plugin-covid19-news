@@ -1,4 +1,4 @@
-from ast import alias
+
 from .data_load import DataLoader
 from nonebot import on_regex, on_command, get_bot, get_driver
 from nonebot.adapters.onebot.v11.bot import Bot
@@ -16,11 +16,11 @@ NewsBot = NewsData()
 '''
 
  指令:
- # help
- # follow   
- # unfollow
- # city_news
- # city_poi_list
+  help
+  follow   
+  unfollow
+  city_news
+  city_poi_list
 
 '''
 __help__ = """---疫情信息 指令列表---
@@ -39,7 +39,12 @@ follow = on_command("关注疫情", priority=5, block=True)
 @follow.handle()
 async def _(bot: Bot, event: MessageEvent, state: T_State = State(), city: Message=CommandArg()):
     city = city.extract_plain_text()
-    gid = str(event.group_id)
+
+    if event.get_event_name() == 'group':
+        gid = str(event.group_id)
+    else:
+        gid = str(event.user_id)
+
     if NewsBot.data.get(city) and city not in FOCUS[gid]:
         FOCUS[gid].append(city)
         DL.save()
@@ -52,7 +57,12 @@ unfollow = on_command("取消关注疫情", priority=5, block=True, aliases={"�
 @unfollow.handle()
 async def _(bot: Bot, event: MessageEvent, state: T_State = State(), city: Message=CommandArg()):
     city = city.extract_plain_text()
-    gid = str(event.group_id)
+
+    if event.get_event_name() == 'group':
+        gid = str(event.group_id)
+    else:
+        gid = str(event.user_id)
+
     if NewsBot.data.get(city) and city in FOCUS[gid]:
         FOCUS[gid].remove(city)
         DL.save()
@@ -110,14 +120,15 @@ async def update():
         for gid in FOCUS.keys():
             for c in FOCUS.get(gid):
                 city = NewsBot.data.get(c)
-
                 # 判定是否为更新后信息
                 if city.today['isUpdated']:
                     # 判定是否未推送
-                    
                     if PUSH.get((gid, c), True):
                         PUSH[(gid, c)] = False
-                        await get_bot().send_group_msg(group_id = int(gid), message= '关注城市疫情变化\n' + city.main_info)
+                        try:
+                            await get_bot().send_group_msg(group_id = int(gid), message= '关注城市疫情变化\n' + city.main_info)
+                        except:
+                            await get_bot().send_private_msg(user_id= int(gid), message= '关注城市疫情变化\n' + city.main_info)
                 
                 else:
                     PUSH[(gid, c)] = True
@@ -148,6 +159,6 @@ if (getattr(get_driver().config, 'covid19', None)):
                 for gid in group_list:
                     await get_bot().send_group_msg(group_id=gid, message=message)
 
-        scheduler.add_job(notice, "cron", hour="11",minute="30" ,id="covid19_notice")
+        scheduler.add_job(notice, "cron", hour="10",minute="5" ,id="covid19_notice")
                 
              
