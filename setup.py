@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import readline
 from setuptools import setup
 requirements = [r.strip() for r in open("requirements.txt", 'r', encoding='utf-8').readlines()]
 
