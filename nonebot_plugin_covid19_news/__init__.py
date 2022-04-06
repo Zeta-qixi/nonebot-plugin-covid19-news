@@ -159,6 +159,6 @@ if (getattr(get_driver().config, 'covid19', None)):
                 for gid in group_list:
                     await get_bot().send_group_msg(group_id=gid, message=message)
 
-        scheduler.add_job(notice, "cron", hour="10",minute="5" ,id="covid19_notice")
+        scheduler.add_job(notice, "cron", hour="11",minute="5" ,id="covid19_notice")
                 
              
