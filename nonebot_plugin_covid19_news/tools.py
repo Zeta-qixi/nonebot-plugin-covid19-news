@@ -24,8 +24,8 @@ class Area():
 
     @property
     def main_info(self):
-        update = {True: '🆕', False: ''}
-        return (f"{self.name}({self.grade})|{update[self.isUpdated]}\n新增确诊: {self.today['confirm']}\n新增无症状: {self.wzz_add}\n目前确诊: {self.total['nowConfirm']}")
+        update = {True: '', False: '（未更新）'}
+        return (f"{self.name}{update[self.today['isUpdated']]}\n新增确诊: {self.today['confirm']}\n新增无症状: {self.wzz_add}\n目前确诊: {self.total['nowConfirm']}")
 
     def __eq__(self, obj):
         return (isinstance(obj, Area) and self.today == obj.today)
@@ -33,7 +33,7 @@ class Area():
 
 class AreaList(Dict):
     def add(self, data):
-        if self.get(data.name, None) != data:
+        if self.get(data.name) != data:
             self[data.name] = data
 
     
