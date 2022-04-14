@@ -9,8 +9,8 @@ class Area():
         self.today = data['today']
         self.total = data['total']
         self.grade = data['total'].get('grade', '风险未确认')
+        self.isUpdated = self.today['isUpdated']
         self.wzz_add = data['today'].get('wzz_add', 0)
-
         self.all_add = self.today['confirm'] + self.wzz_add
         self.children = data.get('children', None)
 
@@ -24,13 +24,18 @@ class Area():
 
     @property
     def main_info(self):
-        return (f"{self.name}({self.grade})\n新增确诊: {self.today['confirm']}\n新增无症状: {self.wzz_add}\n目前确诊: {self.total['nowConfirm']}")
+        update = {True: '🆕', False: ''}
+        return (f"{self.name}({self.grade})|{update[self.isUpdated]}\n新增确诊: {self.today['confirm']}\n新增无症状: {self.wzz_add}\n目前确诊: {self.total['nowConfirm']}")
 
+    def __eq__(self, obj):
+        if not obj: return False
+        return (self.today == obj.today)
 
 
 class AreaList(Dict):
     def add(self, data):
-        self[data.name] = data
+        if self.get(data.name, None) != data:
+            self[data.name] = data
 
     
 class NewsData:

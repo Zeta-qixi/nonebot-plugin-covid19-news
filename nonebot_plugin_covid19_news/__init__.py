@@ -1,4 +1,4 @@
-
+from ast import alias
 from .data_load import DataLoader
 from nonebot import on_regex, on_command, get_bot, get_driver
 from nonebot.adapters.onebot.v11.bot import Bot
@@ -16,11 +16,11 @@ NewsBot = NewsData()
 '''
 
  指令:
-  help
-  follow   
-  unfollow
-  city_news
-  city_poi_list
+ # help
+ # follow   
+ # unfollow
+ # city_news
+ # city_poi_list
 
 '''
 __help__ = """---疫情信息 指令列表---
@@ -104,14 +104,10 @@ async def _(bot: Bot, event: MessageEvent, state: T_State = State()):
 '''
 
 FOCUS = DL.data
-PUSH = {}
-for gid in FOCUS.keys():
-    for c in FOCUS[gid]:
-        PUSH[(gid,c)] = True
 
 
 scheduler = require('nonebot_plugin_apscheduler').scheduler
-@scheduler.scheduled_job('cron', hour='*/1', minute='0', second='0', misfire_grace_time=60) # = UTC+8 1445
+@scheduler.scheduled_job('cron',  minute='*/30', second='0', misfire_grace_time=60)
 async def update():
 
     if NewsBot.update_data():
@@ -120,18 +116,17 @@ async def update():
         for gid in FOCUS.keys():
             for c in FOCUS.get(gid):
                 city = NewsBot.data.get(c)
+                logger.info(city)
                 # 判定是否为更新后信息
-                if city.today['isUpdated']:
-                    # 判定是否未推送
-                    if PUSH.get((gid, c), True):
-                        PUSH[(gid, c)] = False
-                        try:
-                            await get_bot().send_group_msg(group_id = int(gid), message= '关注城市疫情变化\n' + city.main_info)
-                        except:
-                            await get_bot().send_private_msg(user_id= int(gid), message= '关注城市疫情变化\n' + city.main_info)
+                if city.isUpdated:
+                    # send group or private
+                    
+                    try:
+                        await get_bot().send_group_msg(group_id = int(gid), message= '关注城市疫情变化\n' + city.main_info)
+                    except Exception as e:
+                        await get_bot().send_private_msg(user_id= int(gid), message= '关注城市疫情变化\n' + city.main_info)
                 
-                else:
-                    PUSH[(gid, c)] = True
+                    city.isUpdated = False
 
 
 
@@ -146,9 +141,8 @@ if (getattr(get_driver().config, 'covid19', None)):
                   if city.name not in filter_city:
                     res.append(f"{city.main_info}")
             
-            logger.info(len(res))
             if res:
-                message = '⚠️' + '\n\n'.join(res)
+                message = NewsBot.time + '\n' + '\n\n'.join(res)
 
                 group_list = convid_config.get('group')
 
