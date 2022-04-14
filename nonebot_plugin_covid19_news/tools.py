@@ -28,8 +28,7 @@ class Area():
         return (f"{self.name}({self.grade})|{update[self.isUpdated]}\n新增确诊: {self.today['confirm']}\n新增无症状: {self.wzz_add}\n目前确诊: {self.total['nowConfirm']}")
 
     def __eq__(self, obj):
-        if not obj: return False
-        return (self.today == obj.today)
+        return (isinstance(obj, Area) and self.today == obj.today)
 
 
 class AreaList(Dict):
