@@ -112,7 +112,7 @@ async def update():
 
     if NewsBot.update_data():
         logger.info(f"[疫情数据更新]{NewsBot.time}")
-
+        city_list = []
         for gid in FOCUS.keys():
             for c in FOCUS.get(gid):
                 city = NewsBot.data.get(c)
@@ -126,7 +126,8 @@ async def update():
                     except Exception as e:
                         await get_bot().send_private_msg(user_id= int(gid), message= '关注城市疫情变化\n' + city.main_info)
                 
-                    city.isUpdated = False
+        for city in city_list:
+            city.isUpdated = False
 
 
 
