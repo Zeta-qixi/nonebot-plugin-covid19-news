@@ -39,7 +39,7 @@ class AreaList(Dict):
     
 class NewsData:
     def __init__(self):
-        self.data = {}
+        self.data = AreaList()
         self.time = ''
         self.update_data()
 
@@ -53,8 +53,6 @@ class NewsData:
         if data['lastUpdateTime'] != self.time:
             
             self.time = data['lastUpdateTime']
-            self.data = AreaList()
-
             def get_Data(data):
                 
                 if isinstance(data, list):
