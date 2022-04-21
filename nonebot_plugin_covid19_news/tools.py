@@ -44,11 +44,11 @@ class NewsData:
         self.update_data()
 
     def update_data(self):
-        url = "https://view.inews.qq.com/g2/getOnsInfo?name=disease_h5"
-        res = requests.get(url).json()
+        url="https://api.inews.qq.com/newsqa/v1/query/inner/publish/modules/list?modules=statisGradeCityDetail,diseaseh5Shelf"
+        res = requests.get(url)
+        assert res.status_code == 200
+        data = res.json()['data']['diseaseh5Shelf']
 
-        assert res['ret'] == 0
-        data = json.loads(res['data'])
 
         if data['lastUpdateTime'] != self.time:
             
