@@ -116,9 +116,10 @@ async def update():
         for gid in FOCUS.keys():
             for c in FOCUS.get(gid):
                 city = NewsBot.data.get(c)
+                city_list.append(city)
                 logger.info(city)
                 # 判定是否为更新后信息
-                if city.isUpdated:
+                if city.isUpdated is True:
                     # send group or private
                     
                     try:
