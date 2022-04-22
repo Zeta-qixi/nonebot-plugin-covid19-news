@@ -40,7 +40,7 @@ follow = on_command("关注疫情", priority=5, block=True)
 async def _(bot: Bot, event: MessageEvent, state: T_State = State(), city: Message=CommandArg()):
     city = city.extract_plain_text()
 
-    if event.get_event_name() == 'group':
+    if "group" in event.get_event_name():    
         gid = str(event.group_id)
     else:
         gid = str(event.user_id)
