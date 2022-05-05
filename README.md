@@ -55,10 +55,10 @@ plugins = [
 COVID19 = {"notice":"True", "red-line": 1000, "filter":[],"group":[]}
 
 // 字段说明
-// notice: str         仅为 True 时开启功能
-// red-line: int       新增达到改数值会警告
-// filter: List        过滤城市/地区 （默认过滤 香港 台湾）
-// group: List | str   为 all 时发送到所有群
+// notice: str              仅为 True 时开启功能
+// red-line: int            新增达到该数值会, 发送疫情信息
+// filter: List             过滤城市/地区 （默认过滤 香港 台湾）
+// group: List[int] | str   发送到群; 为 all 时发送到所有群
 
 ```
 
