@@ -31,6 +31,7 @@ class Area():
     def __eq__(self, obj):
         return (isinstance(obj, Area) and self.today == obj.today)
 
+
 class AreaList(Dict):
     def add(self, data):
         if self.get(data.name) != data:
