@@ -9,11 +9,13 @@ class Area():
         self.today = data['today']
         self.total = data['total']
         self.grade = data['total'].get('grade', '风险未确认')
-        self.isUpdated = self.today['isUpdated']
+        self.isUpdated = self.today['isUpdated'] # 是否推送
         wzz_add = data['today'].get('wzz_add')
         self.wzz_add = int(wzz_add) if wzz_add else 0
         self.all_add = self.today['confirm'] + self.wzz_add
         self.children = data.get('children', None)
+        if self.wzz_add == 0 and self.total['nowConfirm'] == 0:
+            self.isUpdated = False
 
     @property
     def policy(self):
