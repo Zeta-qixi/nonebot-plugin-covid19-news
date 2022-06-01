@@ -130,30 +130,30 @@ async def update():
             city.isUpdated = False
 
 
-
-if (getattr(get_driver().config, 'covid19', None)):
-    convid_config = get_driver().config.covid19
-    if convid_config.get('notice') in ['true', "True"]:
-        async def notice():
-            res = []
-            filter_city = convid_config.get('filter',[]) + ['香港', '台湾', '中国']
-            for _, city in list(NewsBot.data.items()):
-                if city.all_add >= convid_config.get('red-line', 500): 
-                  if city.name not in filter_city:
-                    res.append(f"{city.main_info}")
-            
-            if res:
-                message = NewsBot.time + '\n' + '\n\n'.join(res)
-
-                group_list = convid_config.get('group')
-
-                if group_list == 'all':
-                    group = await get_bot().get_group_list()
-                    group_list = [ g['group_id'] for g in group ]
-
-                for gid in group_list:
-                    await get_bot().send_group_msg(group_id=gid, message=message)
-
-        scheduler.add_job(notice, "cron", hour="11",minute="5" ,id="covid19_notice")
+try:
+    if (getattr(get_driver().config, 'covid19', None)):
+        convid_config = get_driver().config.covid19
+        if convid_config.get('notice') in ['true', "True"]:
+            async def notice():
+                res = []
+                filter_city = convid_config.get('filter',[]) + ['香港', '台湾', '中国']
+                for _, city in list(NewsBot.data.items()):
+                    if city.all_add >= convid_config.get('red-line', 500): 
+                        if city.name not in filter_city:
+                            res.append(f"{city.main_info}")
                 
-             
+                if res:
+                    message = NewsBot.time + '\n' + '\n\n'.join(res)
+
+                    group_list = convid_config.get('group')
+
+                    if group_list == 'all':
+                        group = await get_bot().get_group_list()
+                        group_list = [ g['group_id'] for g in group ]
+
+                    for gid in group_list:
+                        await get_bot().send_group_msg(group_id=gid, message=message)
+
+            scheduler.add_job(notice, "cron", hour="11",minute="5" ,id="covid19_notice")
+except Exception as e:
+    logger.info(f"config设置有误: {e}")          
