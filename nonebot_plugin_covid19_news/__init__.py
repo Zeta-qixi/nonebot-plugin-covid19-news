@@ -44,12 +44,15 @@ async def _(bot: Bot, event: MessageEvent, state: T_State = State(), city: Messa
     else:
         gid = str(event.user_id)
 
-    if NewsBot.data.get(city) and city not in FOCUS[gid]:
-        FOCUS[gid].append(city)
-        DL.save()
-        await follow.finish(message=f"已添加{city}疫情推送")
+    if NewsBot.data.get(city):
+        if city not in FOCUS[gid]:
+            FOCUS[gid].append(city)
+            DL.save()
+            await follow.finish(message=f"已添加{city}疫情推送")
+        else:
+            await follow.finish(message=f"{city}已在推送列表中")
     else:
-        await follow.finish(message=f"添加失败")
+        await follow.finish(message=f"找不到城市或存在别名")
 
 
 unfollow = on_command("取消关注疫情", priority=5, block=True, aliases={"取消疫情", "取消推送疫情"})
@@ -62,12 +65,15 @@ async def _(bot: Bot, event: MessageEvent, state: T_State = State(), city: Messa
     else:
         gid = str(event.user_id)
 
-    if NewsBot.data.get(city) and city in FOCUS[gid]:
-        FOCUS[gid].remove(city)
-        DL.save()
-        await unfollow.finish(message=f"已取消{city}疫情推送")
+    if NewsBot.data.get(city):
+        if city in FOCUS[gid]:
+            FOCUS[gid].remove(city)
+            DL.save()
+            await unfollow.finish(message=f"已取消{city}疫情推送")
+        else:
+             await unfollow.finish(message=f"{city}不在推送列表中")
     else:
-        await unfollow.finish(message=f"取消失败")
+        await unfollow.finish(message=f"找不到城市或存在别名")
 
 
 
