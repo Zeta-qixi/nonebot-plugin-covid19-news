@@ -1,6 +1,5 @@
 import requests
-from typing import Dict, List
-import json
+from typing import Dict
 from .policy import POLICY_ID, get_city_poi_list, get_policy
 
 class Area():

@@ -1,30 +1,32 @@
-import requests
+from typing import Dict, Union
 import json
+import requests
 
-POLICY_ID = {}
-def set_pid():
+POLICY_ID: Dict[str, Union[str, int]] = dict()
+
+
+'''
+    获取城市id 保存到 POLICY_ID
+'''
+url_city_list = 'https://r.inews.qq.com/api/trackmap/citylist?'
+resp = requests.get(url_city_list)
+res = resp.json()
+
+for province in res['result']:
+    citys = province.get('list')
+    if citys:
+        for city in citys:
+            id = city['id']
+            name = city['name']
+            POLICY_ID[name] = id
+
+
+def citypolicy_info(id: Union[str, int]) -> Dict:
+
     '''
-     获取城市id -> dict
-    '''
-    url_city_list = 'https://r.inews.qq.com/api/trackmap/citylist?'
-    resp = requests.get(url_city_list)
-    res = resp.json()
-
-    for province in res['result']:
-        citys = province.get('list')
-        if citys:
-            for city in citys:
-                id = city['id']
-                name = city['name']
-                POLICY_ID[name] = id
-
-set_pid()
-
-def citypolicy_info(id):
-
-    '''
-     input: 城市id
-     return: 地方疫情相关政策
+    input: 城市id
+     
+     -> 地方疫情相关政策
     '''
 
     url_get_policy = f"https://r.inews.qq.com/api/trackmap/citypolicy?&city_id={id}"
@@ -34,11 +36,12 @@ def citypolicy_info(id):
     return (res_['result']['data'][0])
 
 
-def get_policy(id):
+def get_policy(id: Union[str, int]) -> str:
 
     '''
-     input: 城市id
-     return: 地方进出政策
+    input: 城市id
+
+    -> 进出政策
     '''
 
     data = citypolicy_info(id)    
@@ -48,11 +51,12 @@ def get_policy(id):
     return (msg)
 
 
-def get_city_poi_list(id):
+def get_city_poi_list(id: Union[str, int]) -> str:
 
     '''
-     input: 城市id
-     return: 风险区域
+    input: 城市id
+
+    -> 地方 风险区域
     '''
 
     data = citypolicy_info(id)['poi_list']

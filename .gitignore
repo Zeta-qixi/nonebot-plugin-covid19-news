@@ -11,3 +11,5 @@ dist/
 test.py
 nonebot_plugin_covid19_news/data.*
 nonebot_plugin_covid19_news/data
+test.ipynb
+.vscode/settings.json
