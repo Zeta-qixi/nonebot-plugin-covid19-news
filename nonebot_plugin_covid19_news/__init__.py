@@ -117,8 +117,8 @@ async def update():
         city_list = []  # 记录推送city, 推送成功后 设置 isUpdated 为 False
 
         bot = get_bot()
-        group = await bot.get_group_list()
-
+        groups = await bot.get_group_list()
+        group_id = [group['group_id'] for group in groups]
         for gid in FOCUS.keys():
 
             for c in FOCUS.get(gid):
@@ -129,7 +129,7 @@ async def update():
                 # 判定是否为更新后信息
                 if city.isUpdated is True:
                     # send group or private
-                    if int(gid) in group:
+                    if int(gid) in group_id:
                         await get_bot().send_group_msg(group_id = int(gid), message= '关注城市疫情变化\n' + city.main_info)
                     else:
                         await get_bot().send_private_msg(user_id= int(gid), message= '关注城市疫情变化\n' + city.main_info)
@@ -196,6 +196,7 @@ async def send_msg(
         message: Union[str, Message],
 ):
     if event.message_type == 'group':
-        await send_forward_msg_group(bot, event.group_id, [message])
+        # await send_forward_msg_group(bot, event.group_id, [message])
+        await bot.send(event=event, message=message)
     else:
         await bot.send(event=event, message=message)
