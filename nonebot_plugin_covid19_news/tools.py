@@ -27,7 +27,7 @@ class Area():
     @property
     def main_info(self):
         update = {True: '', False: '（未更新）'}
-        return (f"{self.name}{update[self.today['isUpdated']]}\n新增确诊: {self.today['confirm']}\n新增无症状: {self.wzz_add}\n目前确诊: {self.total['nowConfirm']}")
+        return (f"{self.name}{update[self.today['isUpdated']]}\n新增确诊: {self.today['confirm']}\n新增无症状: {self.wzz_add}")
 
     def __eq__(self, obj):
         return (isinstance(obj, Area) and self.today == obj.today)
