@@ -51,17 +51,23 @@ plugins = [
 ### 异常新增警告
 对国内新增异常的地区进行推送提醒  
 需要修改配置文件`.env.dev`
+
+
+## 配置文件`.env.dev`
 ```
-COVID19 = {"notice":"True", "red-line": 1000, "filter":[],"group":[]}
+// 异常新增警告
+covid19 = {"notice":"True", "red-line": 1000, "filter":[],"group":[]}
 
-// 字段说明
-// notice: str              仅为 True 时开启功能
-// red-line: int            新增达到该数值会, 发送疫情信息
-// filter: List             过滤城市/地区 （默认过滤 香港 台湾）
-// group: List[int] | str   发送到群; 为 all 时发送到所有群
+    // 字段说明
+    // notice: str                仅为 True 时开启功能
+    // red-line: int              新增达到该数值会, 发送疫情信息
+    // filter: List[str]          过滤城市/地区 （默认过滤 香港 台湾）
+    // group: List[int] | str     发送到群; 为 all 时发送到所有群
+
+// 消息发送类型（text, image）
+covid19_message_type = "text"
 
 ```
-
 
 ## 更新log 📝
 ### 2022.2.14
@@ -85,6 +91,9 @@ COVID19 = {"notice":"True", "red-line": 1000, "filter":[],"group":[]}
 ### 2022.6.20
 出行政策以合并消息发送到群聊  （最近好忙 有些问题不能及时处理 见谅）
 
+### 2022.7.31
+图片方式发送信息 （默认发送图片 如需文字形式发送 需修改配置`.env.dev`）
+
 ## 注意⚠️
 数据更新、消息推送 目前以30分钟为周期  
 本插件使用腾讯api, 在疫情发生地(频繁大规模核酸) 数据存在一定滞后性; 确诊数量与其他api获取到的不一样  (感觉有人在开摆!), 真实数据请以国家公布为准。
@@ -93,6 +102,6 @@ COVID19 = {"notice":"True", "red-line": 1000, "filter":[],"group":[]}
 - [ ] 查询省份返回主要城市疫情信息 📍
 - [ ] 一周内疫情变化图表 📈
 - [ ] 添加其他查询api 🔧
-- [ ] 图片形式发送
+- [x] 图片形式发送
 - 有想法欢迎提 issue 💡
 
