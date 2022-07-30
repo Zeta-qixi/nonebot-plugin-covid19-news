@@ -1,24 +1,7 @@
-from typing import Dict, Union
+from typing import Dict, Union, List
+from .data import CITY_ID
 import json
 import requests
-
-POLICY_ID: Dict[str, Union[str, int]] = dict()
-
-
-'''
-    获取城市id 保存到 POLICY_ID
-'''
-url_city_list = 'https://r.inews.qq.com/api/trackmap/citylist?'
-resp = requests.get(url_city_list)
-res = resp.json()
-
-for province in res['result']:
-    citys = province.get('list')
-    if citys:
-        for city in citys:
-            id = city['id']
-            name = city['name']
-            POLICY_ID[name] = id
 
 
 def citypolicy_info(id: Union[str, int]) -> Dict:
@@ -35,20 +18,35 @@ def citypolicy_info(id: Union[str, int]) -> Dict:
     assert res_['message'] == 'success'
     return (res_['result']['data'][0])
 
+def policy_out(id: Union[str, int]) -> str:
+    '''
+    出行政策
+    '''
+    data = citypolicy_info(id)
+    return  f"出行({data['leave_policy_date']})\n{data['leave_policy']}"
 
-def get_policy(id: Union[str, int]) -> str:
+def policy_in(id: Union[str, int]) -> str:
+    '''
+    进入政策
+    '''
+    data = citypolicy_info(id)
+    return f"进入({data['back_policy_date']})\n{data['back_policy']}"
+
+
+def get_policy(out_id: Union[str, int], in_id: Union[str, int]=None) -> List[str]:
 
     '''
-    input: 城市id
+    input: 
+        out_id 离开城市id 
+        in_id: 进入城市id
+
 
     -> 进出政策
     '''
+    if not in_id:
+        in_id = out_id
+    return([policy_out(out_id), policy_in(in_id)])
 
-    data = citypolicy_info(id)    
-    msg = f"出行({data['leave_policy_date']})\n{data['leave_policy']}\n\
-------\n\
-进入({data['back_policy_date']})\n{data['back_policy']}"
-    return (msg)
 
 
 def get_city_poi_list(id: Union[str, int]) -> str:

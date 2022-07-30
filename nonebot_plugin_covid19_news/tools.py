@@ -1,6 +1,6 @@
 import requests
 from typing import Dict
-from .policy import POLICY_ID, get_city_poi_list, get_policy
+
 
 class Area():
     def __init__(self, data):
@@ -16,13 +16,6 @@ class Area():
         if self.all_add == 0:
             self.isUpdated = False
 
-    @property
-    def policy(self):
-        return get_policy(POLICY_ID.get(self.name))
-
-    @property
-    def poi_list(self):
-        return get_city_poi_list(POLICY_ID.get(self.name))
 
     @property
     def main_info(self):
@@ -72,3 +65,4 @@ class NewsData:
             return True
 
 
+NewsBot = NewsData()

@@ -1,16 +1,20 @@
-from typing import Dict, Union, List
-from .data_load import DataLoader
-from nonebot import on_regex, on_command, get_bot, get_driver
+from typing import Dict, Union
+
+from nonebot import on_regex, on_command, get_bot, get_driver, on_endswith
+from nonebot import require, logger
 from nonebot.adapters.onebot.v11.bot import Bot
 from nonebot.adapters.onebot.v11.message import Message
 from nonebot.adapters.onebot.v11.event import  MessageEvent
 from nonebot.typing import T_State
 from nonebot.params import State, CommandArg
-from nonebot import require, logger
-from .tools import NewsData
 
+from .data import CITY_ID
+from .data_load import DataLoader
+from .uilts import send_msg, send_forward_msg_group
+from .policy import CITY_ID, get_city_poi_list, get_policy
+from .tools import NewsBot
 DL = DataLoader('data.json')
-NewsBot = NewsData()
+
 
         
 '''
@@ -19,16 +23,21 @@ NewsBot = NewsData()
  # help
  # follow   
  # unfollow
- # city_news
+ # covid19_news
+ # covid19_policy
  # city_poi_list
 
 '''
 help = on_command(".help")
-city_news = on_regex(r'^(.{0,6})(疫情.{0,4})', block=True, priority=10)
-city_poi_list = on_regex(r'^(.{0,6})(风险地区)', block=True, priority=10)
-follow = on_command("关注疫情", priority=5, block=True)
-unfollow = on_command("取消关注疫情", priority=5, block=True, aliases={"取消疫情", "取消推送疫情"})
 
+follow = on_command("关注疫情", priority=0, block=True)
+unfollow = on_command("取消关注疫情", priority=0, block=True, aliases={"取消疫情", "取消推送疫情"})
+
+covid19_news = on_endswith("疫情", block=True, priority=10)
+covid19_policy = on_endswith(["疫情政策", "出行政策"], block=True, priority=10)
+city_poi_list = on_endswith('风险地区', block=True, priority=10)
+
+city_travel = on_regex(r"(.{2,4})到(.{2,4})", block=True, priority=10)
 
 __help__ = """---疫情信息 指令列表---
 关注疫情 + 城市 （关注疫情 深圳）
@@ -77,30 +86,41 @@ async def _(bot: Bot, event: MessageEvent, state: T_State = State(), city: Messa
 
 
 
-@city_news.handle()
-async def _(bot: Bot, event: MessageEvent, state: T_State = State()):
-    city_name, kw = state['_matched_groups']
-
+@covid19_news.handle()
+async def _(bot: Bot, event: MessageEvent):
+    
+    city_name = str(event.get_message())[:-2]
     city = NewsBot.data.get(city_name)
 
-    if kw in ['疫情政策', '疫情']:
-        if city:
-            if kw == '疫情政策':
-                await send_msg(bot, event, city.policy)
-            else:
-                await city_news.send(message=f"{NewsBot.time}\n{city.main_info}")
-        else:
-            await city_news.finish(message="查询的城市不存在或存在别名")
+    if city:
+        await covid19_news.send(message=f"{NewsBot.time}\n{city.main_info}")
+    else:
+        await covid19_news.finish(message="查询的城市不存在或存在别名")
+
+
+@covid19_policy.handle()
+async def _(bot: Bot, event: MessageEvent):
+
+    city = str(event.get_message())[:-4]
+    if city in CITY_ID:
+        await send_msg(bot, event, get_policy(CITY_ID[city]))
 
 
 @city_poi_list.handle()
-async def _(bot: Bot, event: MessageEvent, state: T_State = State()):
-    city_name, _ = state['_matched_groups']
-    city = NewsBot.data.get(city_name)
-    if city:
-        await send_msg(bot, event, city.poi_list)
+async def _(bot: Bot, event: MessageEvent):
+    city = str(event.get_message())[:-4]
+    if city in CITY_ID:
+        await send_msg(bot, event, get_city_poi_list(CITY_ID[city]))
     
+@city_travel.handle()
+async def _(bot: Bot, event: MessageEvent, state: T_State = State()):
+    
+    city_A, city_B = state['_matched_groups']
+    if city_A in CITY_ID and city_B in CITY_ID:
+        await send_msg(bot, event, get_policy(CITY_ID[city_A], CITY_ID[city_B]))
+ 
 
+    
 '''
 
  定时更新 & 定时推送
@@ -124,7 +144,6 @@ async def update():
             for c in FOCUS.get(gid):
                 city = NewsBot.data.get(c)
                 city_list.append(city)
-                logger.info(city)
 
                 # 判定是否为更新后信息
                 if city.isUpdated is True:
@@ -151,7 +170,7 @@ try:
                 res = []
                 filter_city = convid_config.get('filter',[]) + ['香港', '台湾', '中国']
                 for _, city in list(NewsBot.data.items()):
-                    if city.all_add >= convid_config.get('red-line', 500): 
+                    if city.all_add >= convid_config.get('red-line', 100): 
                         if city.name not in filter_city:
                             res.append(f"{city.main_info}")
                 
@@ -173,30 +192,3 @@ except Exception as e:
     logger.info(f"疫情config设置有误: {e}")          
 
 
-# 合并消息
-async def send_forward_msg_group(
-        bot: Bot,
-        group_id: int,
-        message: List,
-):
-
-    if isinstance(message, str):
-        message = [message]
-
-    def to_json(msg):
-        return {"type": "node", "data": {"name": "疫情信息", "uin": bot.self_id, "content": msg}}
-    await bot.call_api(
-        "send_group_forward_msg", group_id=group_id, messages=[to_json(msg) for msg in message]
-    )
-
-
-async def send_msg(
-        bot: Bot,
-        event: Union[MessageEvent, int],
-        message: Union[str, Message],
-):
-    if event.message_type == 'group':
-        # await send_forward_msg_group(bot, event.group_id, [message])
-        await bot.send(event=event, message=message)
-    else:
-        await bot.send(event=event, message=message)
