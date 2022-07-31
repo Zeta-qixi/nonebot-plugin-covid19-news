@@ -6,7 +6,7 @@ from typing import Union, List
 from nonebot.adapters.onebot.v11.bot import Bot
 from nonebot.adapters.onebot.v11.message import Message, MessageSegment
 from nonebot.adapters.onebot.v11.event import  MessageEvent
-import nonebot_plugin_petpet
+
 
 SEND_IMAGE = True
 try:
