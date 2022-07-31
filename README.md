@@ -54,7 +54,7 @@ plugins = [
 
 ## 图片发送
 1. 下载 `fonts/` 目录中字体 放到 `bot.py`同级目录的`data/fonts`中  
-2. 配置`.env.dev`
+2. 配置`.env.dev`  添加以下一段
 ```
 covid19_message_type = "image"
 ```
