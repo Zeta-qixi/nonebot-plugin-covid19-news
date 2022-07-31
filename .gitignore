@@ -9,7 +9,7 @@ dist/
 *.egg-info/top_level.txt
 *.egg-info/PKG-INFO
 test.py
-nonebot_plugin_covid19_news/data.*
+nonebot_plugin_covid19_news/data.json
 nonebot_plugin_covid19_news/data
 test.ipynb
 .vscode/settings.json
