@@ -52,8 +52,16 @@ plugins = [
 对国内新增异常的地区进行推送提醒  
 需要修改配置文件`.env.dev`
 
+## 图片发送
+1. 下载 `fonts/` 目录中字体 放到 `bot.py`同级目录的`data/fonts`中  
+2. 配置`.env.dev`
+```
+covid19_message_type = "image"
+```
 
-## 配置文件`.env.dev`
+
+
+## 配置文件说明
 ```
 // 异常新增警告
 covid19 = {"notice":"True", "red-line": 1000, "filter":[],"group":[]}
@@ -65,7 +73,7 @@ covid19 = {"notice":"True", "red-line": 1000, "filter":[],"group":[]}
     // group: List[int] | str     发送到群; 为 all 时发送到所有群
 
 // 消息发送类型（text, image）
-covid19_message_type = "text"
+covid19_message_type = "image"
 
 ```
 
@@ -92,7 +100,7 @@ covid19_message_type = "text"
 出行政策以合并消息发送到群聊  （最近好忙 有些问题不能及时处理 见谅）
 
 ### 2022.7.31
-图片方式发送信息 （默认发送图片 如需文字形式发送 需修改配置`.env.dev`）
+图片方式发送信息 （默认发送文字 如需图片方式发送 需修改配置`.env.dev`）
 
 ## 注意⚠️
 数据更新、消息推送 目前以30分钟为周期  
