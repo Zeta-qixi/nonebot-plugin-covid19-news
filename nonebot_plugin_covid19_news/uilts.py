@@ -17,13 +17,12 @@ FONT_SIZE = 13
 
 try:
     type_ = get_driver().config.covid19_message_type
-    if type_ in ['image', 'Image']:
-
-        FONT = ImageFont.truetype(font= str((FONT_PATH/'MSYH.TTC').resolve()), size = FONT_SIZE)
-        SEND_IMAGE = True
-        logger.info('将以 Image形式发送合并消息')
+    assert type_ in ['image', 'Image']
+    FONT = ImageFont.truetype(font= str((FONT_PATH/'MSYH.TTC').resolve()), size = FONT_SIZE)
+    SEND_IMAGE = True
+    logger.info('将以Image形式发送合并消息')
 except:
-    logger.info('将以 Text形式发送合并消息')
+    logger.info('将以Text形式发送合并消息')
 
 # 合并消息
 async def send_forward_msg_group(
@@ -42,7 +41,7 @@ async def send_forward_msg_group(
     )
 
 # 转图片消息
-def text2image(text:Union[str, List]) -> Message:
+def text2image(text: str) -> Message:
     L, H = 20, 0
     
     res = []
@@ -67,15 +66,20 @@ def text2image(text:Union[str, List]) -> Message:
 
 async def send_msg(
         bot: Bot,
-        event: Union[MessageEvent, int],
+        event: MessageEvent,
         message: Union[str, Message, List],
 ):
 
-    if event.message_type == 'group':
-        if not isinstance(message, list):
-            message = [message]
-        if SEND_IMAGE:
-            message = [text2image(msg) for msg in message]
-        await send_forward_msg_group(bot, event.group_id, message)
+    message = message if isinstance(message, list) else [message]
+
+    if SEND_IMAGE:
+        
+        for msg in message:
+            await bot.send(event=event, message=text2image(msg))
+
     else:
-        await bot.send(event=event, message=message)
+        if event.message_type == 'group':
+            await send_forward_msg_group(bot, event.group_id, message)
+        else:
+            for msg in message:
+                await bot.send(event=event, message=msg)
