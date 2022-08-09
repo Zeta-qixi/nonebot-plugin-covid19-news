@@ -1,5 +1,3 @@
-from typing import Dict, Union
-
 from nonebot import on_regex, on_command, get_bot, get_driver, on_endswith
 from nonebot import require, logger
 from nonebot.adapters.onebot.v11.bot import Bot
@@ -11,7 +9,7 @@ from nonebot.params import State, CommandArg
 from .data import CITY_ID
 from .data_load import DataLoader
 from .uilts import send_msg, send_forward_msg_group
-from .policy import CITY_ID, get_city_poi_list, get_policy
+from .policy import get_city_poi_list, get_policy
 from .tools import NewsBot
 DL = DataLoader('data.json')
 

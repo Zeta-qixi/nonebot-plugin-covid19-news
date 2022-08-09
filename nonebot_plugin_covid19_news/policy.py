@@ -1,6 +1,4 @@
 from typing import Dict, Union, List
-from .data import CITY_ID
-import json
 import requests
 
 
@@ -49,7 +47,7 @@ def get_policy(out_id: Union[str, int], in_id: Union[str, int]=None) -> List[str
 
 
 
-def get_city_poi_list(id: Union[str, int]) -> str:
+def get_city_poi_list(id: Union[str, int]) -> List[str]:
 
     '''
     input: 城市id
@@ -58,7 +56,14 @@ def get_city_poi_list(id: Union[str, int]) -> str:
     '''
 
     data = citypolicy_info(id)['poi_list']
-    t = {'0':'🟢低风险','1':'🟡中风险', '2':'🔴高风险'}   
-    list_ = [f"{t[i['type']]} {i['area'].split(i['city'])[-1]}" for i in data]
-    return '\n\n'.join(list_) if data else "🟢全部低风险"
+    t_ = {'0':'🟢低风险','1':'🟡中风险', '2':'🔴高风险'}
+
+    res_list = [[], [], []] # type: List
+    for i in data:
+        res_list[2-int(i['type'])].append(f"{t_[i['type']]} {i['area'].split(i['city'])[-1]}")
+    
+    for i in range(3):
+        res_list[i] = '\n\n'.join(res_list[i])
+
+    return res_list if data else ["全部低风险"]
 
