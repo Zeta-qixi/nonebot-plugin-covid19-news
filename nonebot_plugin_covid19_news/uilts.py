@@ -7,6 +7,7 @@ from typing import Union, List
 from nonebot.adapters.onebot.v11.bot import Bot
 from nonebot.adapters.onebot.v11.message import Message, MessageSegment
 from nonebot.adapters.onebot.v11.event import  MessageEvent
+from nonebot.adapters.onebot.v11 import ActionFailed
 
 
 SEND_IMAGE = False
@@ -72,14 +73,18 @@ async def send_msg(
 
     message = message if isinstance(message, list) else [message]
 
-    if SEND_IMAGE:
-        
-        for msg in message:
-            await bot.send(event=event, message=text2image(msg))
-
+    if event.message_type == 'group':
+        try:
+            if SEND_IMAGE:
+                await send_forward_msg_group(bot, event.group_id, [text2image(msg) for msg in message])
+            else:
+                await send_forward_msg_group(bot, event.group_id, message)
+        except ActionFailed as e:
+            logger.error(e)
+            await bot.send(event=event, message="群发消息失败, 账号可能风控")
     else:
-        if event.message_type == 'group':
-            await send_forward_msg_group(bot, event.group_id, message)
-        else:
-            for msg in message:
+        for msg in message:
+            if SEND_IMAGE:
+                await bot.send(event=event, message=text2image(msg))
+            else:
                 await bot.send(event=event, message=msg)
