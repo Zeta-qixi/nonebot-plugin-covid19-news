@@ -55,7 +55,7 @@ def get_city_poi_list(id: Union[str, int]) -> List[str]:
     -> 地方 风险区域
     '''
 
-    data = citypolicy_info(id)['poi_list']
+    data = citypolicy_info(id)['poi_list']  # type: List
     t_ = {'0':'🟢低风险','1':'🟡中风险', '2':'🔴高风险'}
 
     res_list = [[], [], []] # type: List
