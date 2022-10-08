@@ -6,7 +6,7 @@ from nonebot.adapters.onebot.v11.event import  MessageEvent
 from nonebot.typing import T_State
 from nonebot.params import State, CommandArg
 
-from .data import CITY_ID
+from .data import CITY_ID, PROVINCE
 from .data_load import DataLoader
 from .uilts import send_msg, send_forward_msg_group
 from .policy import get_city_poi_list, get_policy
@@ -16,7 +16,6 @@ DL = DataLoader('data.json')
 
         
 '''
-
  指令:
  # help
  # follow   
@@ -86,36 +85,68 @@ async def _(bot: Bot, event: MessageEvent, state: T_State = State(), city: Messa
 
 @covid19_news.handle()
 async def _(bot: Bot, event: MessageEvent):
-    
     city_name = str(event.get_message())[:-2]
-    city = NewsBot.data.get(city_name)
-
+    if len(city_name) > 6 and city_name not in CITY_ID:
+        return
+        
+    city = NewsBot.data.get_data(city_name)
     if city:
         await covid19_news.send(message=f"{NewsBot.time}\n{city.main_info}")
     else:
-        await covid19_news.finish(message="查询的城市不存在或存在别名")
+        logger.info(f'"{city_name}" is not found.')
+        await covid19_news.finish(message="查询的地区不存在或存在别名")
 
 
 @covid19_policy.handle()
 async def _(bot: Bot, event: MessageEvent):
 
-    city = str(event.get_message())[:-4]
-    if city in CITY_ID:
-        await send_msg(bot, event, get_policy(CITY_ID[city]))
+    name = str(event.get_message())[:-4]
+    if name in CITY_ID:
+        await send_msg(bot, event, get_policy(CITY_ID[name]))
+    elif name in PROVINCE:
+        attention = ''
+        for city in PROVINCE[name]:
+            city_n = city['n']
+            if NewsBot.data.get_data(city_n).all_add:
+                attention += ('\n'+city_n)
 
+        msg = '疫情政策查询需详细至市级, 目前该省拥有疫情的城市:' + attention if attention \
+        else "疫情政策查询需详细至市级 (该地区目前没有发生疫情)"
+
+        await send_msg(bot, event, msg)
+
+    else:
+        await covid19_policy.finish(message="查询失败（查询的地区不存在或存在别名）")
+            
 
 @city_poi_list.handle()
 async def _(bot: Bot, event: MessageEvent):
-    city = str(event.get_message())[:-4]
-    if city in CITY_ID:
-        await send_msg(bot, event, get_city_poi_list(CITY_ID[city]))
-    
+    name = str(event.get_message())[:-4]
+    if name in CITY_ID:
+        await send_msg(bot, event, get_city_poi_list(CITY_ID[name]))
+
+    elif name in PROVINCE:
+        attention = ''
+        for city in PROVINCE[name]:
+            city_n = city['n']
+            if NewsBot.data.get_data(city_n).all_add:
+                attention += ('\n'+city_n)
+
+        msg = '风险地区查询需详细至市级, 目前该省拥有疫情的城市:' + attention if attention \
+        else '风险地区查询需详细至市级 (该地区目前没有发生疫情)'
+
+        await send_msg(bot, event, msg)
+
+    else:
+        await city_poi_list.finish(message="查询失败（查询的地区不存在或存在别名）")
+
 @city_travel.handle()
 async def _(bot: Bot, event: MessageEvent, state: T_State = State()):
-    
     city_A, city_B = state['_matched_groups']
     if city_A in CITY_ID and city_B in CITY_ID:
         await send_msg(bot, event, get_policy(CITY_ID[city_A], CITY_ID[city_B]))
+    else:
+        await covid19_news.finish(message="地区需详细至市级")
  
 
     
@@ -188,5 +219,3 @@ try:
             scheduler.add_job(notice, "cron", hour="11",minute="5" ,id="covid19_notice")
 except Exception as e:
     logger.info(f"疫情config设置有误: {e}")          
-
-

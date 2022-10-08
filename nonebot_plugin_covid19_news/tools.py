@@ -17,6 +17,7 @@ class Area():
             self.isUpdated = False
 
 
+
     @property
     def main_info(self):
         update = {True: '', False: '（未更新）'}
