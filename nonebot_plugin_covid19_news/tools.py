@@ -31,6 +31,11 @@ class AreaList(Dict):
     def add(self, data):
         if self.get(data.name) != data:
             self[data.name] = data
+            
+    def get_data(self,name):
+        if name[-1] in ['市', '省']:
+            name = name[:-1]
+        return self.get(name)
 
     
 class NewsData:
