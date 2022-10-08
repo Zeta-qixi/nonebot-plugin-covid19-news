@@ -145,8 +145,7 @@ async def _(bot: Bot, event: MessageEvent, state: T_State = State()):
     city_A, city_B = state['_matched_groups']
     if city_A in CITY_ID and city_B in CITY_ID:
         await send_msg(bot, event, get_policy(CITY_ID[city_A], CITY_ID[city_B]))
-    else:
-        await covid19_news.finish(message="地区需详细至市级")
+
  
 
     
