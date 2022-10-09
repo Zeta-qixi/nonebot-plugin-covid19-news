@@ -107,8 +107,12 @@ async def _(bot: Bot, event: MessageEvent):
         attention = ''
         for city in PROVINCE[name]:
             city_n = city['n']
-            if NewsBot.data.get_data(city_n).all_add:
-                attention += ('\n'+city_n)
+            logger.info(city_n)
+            if item:=NewsBot.data.get_data(city_n):
+                if item.all_add:
+                    attention += ('\n'+city_n)
+            else:
+                logger.error(f"查询【{city_n}】信息失败")
 
         msg = '疫情政策查询需详细至市级, 目前该省拥有疫情的城市:' + attention if attention \
         else "疫情政策查询需详细至市级 (该地区目前没有发生疫情)"
@@ -129,8 +133,12 @@ async def _(bot: Bot, event: MessageEvent):
         attention = ''
         for city in PROVINCE[name]:
             city_n = city['n']
-            if NewsBot.data.get_data(city_n).all_add:
-                attention += ('\n'+city_n)
+            
+            if item:=NewsBot.data.get_data(city_n):
+                if item.all_add:
+                    attention += ('\n'+city_n)
+            else:
+                logger.error(f"查询【{city_n}】信息失败")
 
         msg = '风险地区查询需详细至市级, 目前该省拥有疫情的城市:' + attention if attention \
         else '风险地区查询需详细至市级 (该地区目前没有发生疫情)'
