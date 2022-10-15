@@ -1,5 +1,5 @@
-nonebot2>=2.0.0b1
+nonebot2>=2.0.0rc1
 nonebot-adapter-cqhttp>=2.0.0b1
+nonebot-plugin-apscheduler>=0.2.0
 requests>=2.26.0
 Pillow>=9.0.0
-nonebot-plugin-apscheduler>=0.1.2
