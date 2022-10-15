@@ -4,7 +4,7 @@ from nonebot.adapters.onebot.v11.bot import Bot
 from nonebot.adapters.onebot.v11.message import Message
 from nonebot.adapters.onebot.v11.event import  MessageEvent
 from nonebot.typing import T_State
-from nonebot.params import State, CommandArg
+from nonebot.params import CommandArg
 
 from .data import CITY_ID, PROVINCE
 from .data_load import DataLoader
@@ -50,7 +50,7 @@ async def _(bot: Bot, event: MessageEvent):
     await help.finish(message = __help__)
 
 @follow.handle()
-async def _(bot: Bot, event: MessageEvent, state: T_State = State(), city: Message=CommandArg()):
+async def _(bot: Bot, event: MessageEvent, state: T_State, city: Message=CommandArg()):
     city = city.extract_plain_text()    
     if "group" in event.get_event_name():    
         gid = str(event.group_id)
@@ -66,7 +66,7 @@ async def _(bot: Bot, event: MessageEvent, state: T_State = State(), city: Messa
 
 
 @unfollow.handle()
-async def _(bot: Bot, event: MessageEvent, state: T_State = State(), city: Message=CommandArg()):
+async def _(bot: Bot, event: MessageEvent, state: T_State, city: Message=CommandArg()):
     city = city.extract_plain_text()
 
     if event.message_type == "group": 
@@ -149,7 +149,7 @@ async def _(bot: Bot, event: MessageEvent):
         await city_poi_list.finish(message="查询失败（查询的地区不存在或存在别名）")
 
 @city_travel.handle()
-async def _(bot: Bot, event: MessageEvent, state: T_State = State()):
+async def _(bot: Bot, event: MessageEvent, state: T_State):
     city_A, city_B = state['_matched_groups']
     if city_A in CITY_ID and city_B in CITY_ID:
         await send_msg(bot, event, get_policy(CITY_ID[city_A], CITY_ID[city_B]))
