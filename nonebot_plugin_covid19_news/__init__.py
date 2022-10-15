@@ -149,7 +149,11 @@ async def _(bot: Bot, event: MessageEvent):
         await city_poi_list.finish(message="查询失败（查询的地区不存在或存在别名）")
 
 @city_travel.handle()
+<<<<<<< HEAD
 async def _(bot: Bot, event: MessageEvent, state: T_State):
+=======
+async def _(bot: Bot, event: MessageEvent, state: T_State ):
+>>>>>>> 3d11b9d04d1bbc6843c544b75d6118cdaf91f674
     city_A, city_B = state['_matched_groups']
     if city_A in CITY_ID and city_B in CITY_ID:
         await send_msg(bot, event, get_policy(CITY_ID[city_A], CITY_ID[city_B]))
