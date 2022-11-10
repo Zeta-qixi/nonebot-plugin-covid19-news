@@ -91,7 +91,7 @@ async def _(bot: Bot, event: MessageEvent):
         
     city = NewsBot.data.get_data(city_name)
     if city:
-        await covid19_news.send(message=f"{NewsBot.time}\n{city.main_info}")
+        await covid19_news.send(message=f"{city.main_info}")
     else:
         logger.info(f'"{city_name}" is not found.')
         await covid19_news.finish(message="查询的地区不存在或存在别名")
@@ -150,6 +150,7 @@ async def _(bot: Bot, event: MessageEvent):
 
 @city_travel.handle()
 async def _(bot: Bot, event: MessageEvent, state: T_State):
+
     city_A, city_B = state['_matched_groups']
     if city_A in CITY_ID and city_B in CITY_ID:
         await send_msg(bot, event, get_policy(CITY_ID[city_A], CITY_ID[city_B]))
@@ -169,7 +170,7 @@ scheduler = require('nonebot_plugin_apscheduler').scheduler
 async def update():
 
     if NewsBot.update_data():
-        logger.info(f"[疫情数据更新]{NewsBot.time}")
+        logger.info(f"[疫情数据更新]")
         city_list = []  # 记录推送city, 推送成功后 设置 isUpdated 为 False
 
         bot = get_bot()
@@ -206,13 +207,13 @@ try:
                 res = []
                 filter_city = convid_config.get('filter',[]) + ['香港', '台湾', '中国']
                 for _, city in list(NewsBot.data.items()):
-                    if city.all_add >= convid_config.get('red-line', 100): 
+                    if city.all_add >= convid_config.get('red-line', 1000): 
                         if city.name not in filter_city:
                             res.append(f"{city.main_info}")
                 
                 if res:
                     bot = get_bot()
-                    message = NewsBot.time + '\n' + '\n\n'.join(res)
+                    message = '\n\n'.join(res)
 
                     group_list = convid_config.get('group')
                     if group_list == 'all':
@@ -221,7 +222,6 @@ try:
 
                     for gid in group_list:
                         await send_forward_msg_group(bot, group_id=gid, message=message)
-
 
             scheduler.add_job(notice, "cron", hour="11",minute="5" ,id="covid19_notice")
 except Exception as e:
