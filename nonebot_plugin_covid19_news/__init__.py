@@ -179,11 +179,13 @@ async def update():
         for gid in FOCUS.keys():
 
             for c in FOCUS.get(gid):
+
                 city = NewsBot.data.get(c)
-                city_list.append(city)
+                
 
                 # 判定是否为更新后信息
-                if city.isUpdated is True:
+                if city and city.isUpdated is True:
+                    city_list.append(city)
                     # send group or private
                     if int(gid) in group_id:
                         await get_bot().send_group_msg(group_id = int(gid), message= '关注城市疫情变化\n' + city.main_info)
