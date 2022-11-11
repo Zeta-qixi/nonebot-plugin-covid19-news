@@ -1,6 +1,7 @@
 import requests
 from typing import Dict
 import time
+from datetime import datetime
 import re
 
 
@@ -17,7 +18,7 @@ class Area():
         self.local_wzz_add = to_int(data.get('asymptomaticLocalRelative'))       # 新增本土无症状
         self.cur_confirm = to_int(data.get('curConfirm')  )                      # 现有确诊    
         self.all_add = self.confirmed_relative + self.wzz_add
-        self.time = data.get('updateTime')
+        self.time = float(data.get('updateTime'))
         self.isUpdated = True
         if self.all_add == 0:
             self.isUpdated = False
@@ -25,14 +26,16 @@ class Area():
 
     @property
     def update_time(self):
-        time_ = time.localtime(float(self.time))
-        return f"{time_.tm_year}-{time_.tm_mon}-{time_.tm_mday} {time_.tm_hour}:{time_.tm_min}"
-
+        return datetime.fromtimestamp(self.time).strftime('%Y-%m-%d %H:%M')
 
     @property
     def main_info(self):
         return (f"{self.name} {self.update_time}\n新增确诊: {self.confirmed_relative}\n新增无症状: {self.wzz_add}\n现有确诊: {self.cur_confirm}")
 
+    def today_update(self):
+        dt = datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d')
+        timeArray = time.strptime(dt, "%Y-%m-%d") # 0点时间戳
+        return self.time >= time.mktime(timeArray)
 
     def __eq__(self, obj):
         return (isinstance(obj, Area) and self.all_add == obj.all_add)
