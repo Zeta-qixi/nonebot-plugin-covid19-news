@@ -76,7 +76,7 @@ async def send_msg(
     if event.message_type == 'group':
         try:
             if SEND_IMAGE:
-                await send_forward_msg_group(bot, event.group_id, [text2image(msg) for msg in message])
+                await send_forward_msg_group(bot, event.group_id, [text2image(msg) for msg in message if msg])
             else:
                 await send_forward_msg_group(bot, event.group_id, message)
         except ActionFailed as e:
