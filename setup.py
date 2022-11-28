@@ -6,7 +6,7 @@ requirements = [r.strip() for r in open("requirements.txt", 'r', encoding='utf-8
 
 setup(
     name='nonebot-plugin-covid19-news',
-    version='0.6.3.3',
+    version='0.6.3.5',
     author='Zeta',
     author_email='',
     long_description="https://github.com/Zeta-qixi/nonebot-plugin-covid19-news",
