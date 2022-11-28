@@ -62,8 +62,7 @@ def get_city_poi_list(id: Union[str, int]) -> List[str]:
     for i in data:
         res_list[2-int(i['type'])].append(f"{t_[i['type']]} {i['area'].split(i['city'])[-1]}")
     
-    for i in range(3):
-        res_list[i] = '\n\n'.join(res_list[i])
+    res_list =  ['\n\n'.join(res) for res in res_list if res]
 
     return res_list if data else ["全部低风险"]
 
