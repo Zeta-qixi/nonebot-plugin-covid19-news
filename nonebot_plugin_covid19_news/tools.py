@@ -19,9 +19,7 @@ class Area():
         self.cur_confirm = to_int(data.get('curConfirm')  )                      # 现有确诊    
         self.all_add = self.confirmed_relative + self.wzz_add
         self.time = float(data.get('updateTime'))
-        self.isUpdated = True
-        if self.all_add == 0:
-            self.isUpdated = False
+        self.is_updated = True if self.all_add > 0 else False
 
 
     @property
@@ -32,13 +30,18 @@ class Area():
     def main_info(self):
         return (f"{self.name} {self.update_time}\n新增确诊: {self.confirmed_relative}\n新增无症状: {self.wzz_add}\n现有确诊: {self.cur_confirm}")
 
-    def today_update(self):
+    def is_today(self):
         dt = datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d')
         timeArray = time.strptime(dt, "%Y-%m-%d") # 0点时间戳
         return self.time >= time.mktime(timeArray)
 
     def __eq__(self, obj):
-        return (isinstance(obj, Area) and self.all_add == obj.all_add)
+        return (
+            isinstance(obj, Area) and 
+            self.confirmed_relative == obj.confirmed_relative and 
+            self.wzz_add == obj.wzz_add and 
+            self.confirmed_relative == obj.confirmed_relative
+            )
 
 
 
@@ -69,12 +72,19 @@ class NewsData:
 
       
         for area in data:
-            
             self.data.add(Area(area))
             for city in area.get("subList",[]):
                 self.data.add(Area(city))
 
-
+        summary_data_in = json_dict['summaryDataIn']
+        in_data = {
+            'area': '国内',
+            'confirmedRelative'    : summary_data_in['unOverseasInputNewAdd'],
+            'asymptomaticRelative' : summary_data_in['asymptomaticLocalRelative'],
+            'curConfirm'           : int(summary_data_in['asymptomaticLocal']) + int(summary_data_in['curLocalConfirm']),
+            'updateTime'           : summary_data_in['relativeTime']
+        }
+        self.data.add(Area(in_data))
         return True
 
 

@@ -171,7 +171,7 @@ async def update():
 
     if NewsBot.update_data():
         logger.info(f"[疫情数据更新]")
-        city_list = []  # 记录推送city, 推送成功后 设置 isUpdated 为 False
+        city_list = []  # 记录推送city, 推送成功后 设置 is_updated 为 False
 
         bot = get_bot()
         groups = await bot.get_group_list()
@@ -182,9 +182,8 @@ async def update():
 
                 city = NewsBot.data.get(c)
                 
-
                 # 判定是否为更新后信息
-                if city and city.isUpdated is True:
+                if city and city.is_updated:
                     city_list.append(city)
                     # send group or private
                     if int(gid) in group_id:
@@ -193,7 +192,7 @@ async def update():
                         await get_bot().send_private_msg(user_id= int(gid), message= '关注城市疫情变化\n' + city.main_info)
                 
         for city in city_list:
-            city.isUpdated = False
+            city.is_updated = False
 
 
 '''
