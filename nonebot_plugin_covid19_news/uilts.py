@@ -84,7 +84,7 @@ async def send_msg(
             await bot.send(event=event, message="群发消息失败, 账号可能风控")
     else:
         for msg in message:
-            if SEND_IMAGE:
-                await bot.send(event=event, message=text2image(msg))
-            else:
-                await bot.send(event=event, message=msg)
+                if SEND_IMAGE and msg:
+                    await bot.send(event=event, message=text2image(msg))
+                else:
+                    await bot.send(event=event, message=msg)
