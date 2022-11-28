@@ -93,8 +93,7 @@ async def _(bot: Bot, event: MessageEvent):
     if city:
         await covid19_news.send(message=f"{city.main_info}")
     else:
-        logger.info(f'"{city_name}" is not found.')
-        await covid19_news.finish(message="查询的地区不存在或存在别名")
+        logger.error(f'"{city_name}" is not found.')
 
 
 @covid19_policy.handle()
@@ -120,7 +119,8 @@ async def _(bot: Bot, event: MessageEvent):
         await send_msg(bot, event, msg)
 
     else:
-        await covid19_policy.finish(message="查询失败（查询的地区不存在或存在别名）")
+        logger.error(f'"{name}" is not found.')
+        
             
 
 @city_poi_list.handle()
@@ -146,7 +146,7 @@ async def _(bot: Bot, event: MessageEvent):
         await send_msg(bot, event, msg)
 
     else:
-        await city_poi_list.finish(message="查询失败（查询的地区不存在或存在别名）")
+        logger.error(f'"{name}" is not found.')
 
 @city_travel.handle()
 async def _(bot: Bot, event: MessageEvent, state: T_State):
