@@ -54,8 +54,11 @@ class AreaList(Dict):
 
         if name in ['中国', '全国']:
             name = '国内'
-        if name[-1] in ['市', '省']:
+        elif name == '吉林市':
+            ...
+        elif name[-1] in ['市', '省']:
             name = name[:-1]
+        
         return self.get(name)
 
     
