@@ -51,6 +51,9 @@ class AreaList(Dict):
             self[data.name] = data
             
     def get_data(self,name):
+
+        if name in ['中国', '全国']:
+            name = '国内'
         if name[-1] in ['市', '省']:
             name = name[:-1]
         return self.get(name)
