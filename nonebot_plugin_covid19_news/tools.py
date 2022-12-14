@@ -15,7 +15,7 @@ class Area():
         self.native_relative = to_int(data.get('nativeRelative'))                # 本土新增
         self.wzz_add = to_int(data.get('asymptomaticRelative'))                  # 新增无症状
         # self.local_wzz_add = to_int(data.get('asymptomaticLocalRelative'))       # 新增本土无症状
-        # self.cur_confirm = to_int(data.get('curConfirm')  )                      # 现有确诊    
+        self.cur_confirm = to_int(data.get('curConfirm')  )                      # 现有确诊    
         self.all_add = self.confirmed_relative + self.wzz_add
         self.time = float(data.get('updateTime', 0))
         self.is_updated = True if self.all_add > 0 else False
