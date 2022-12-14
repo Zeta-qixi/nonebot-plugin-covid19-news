@@ -10,15 +10,14 @@ class Area():
 
         def to_int(data):
             return int(data) if data else 0
-     
         self.name = data['city'] if data.get('city') else data['area']
         self.confirmed_relative = to_int(data.get('confirmedRelative'))          # 新增确诊
         self.native_relative = to_int(data.get('nativeRelative'))                # 本土新增
         self.wzz_add = to_int(data.get('asymptomaticRelative'))                  # 新增无症状
-        self.local_wzz_add = to_int(data.get('asymptomaticLocalRelative'))       # 新增本土无症状
-        self.cur_confirm = to_int(data.get('curConfirm')  )                      # 现有确诊    
+        # self.local_wzz_add = to_int(data.get('asymptomaticLocalRelative'))       # 新增本土无症状
+        # self.cur_confirm = to_int(data.get('curConfirm')  )                      # 现有确诊    
         self.all_add = self.confirmed_relative + self.wzz_add
-        self.time = float(data.get('updateTime'))
+        self.time = float(data.get('updateTime', 0))
         self.is_updated = True if self.all_add > 0 else False
 
 
@@ -28,7 +27,7 @@ class Area():
 
     @property
     def main_info(self):
-        return (f"{self.name} {self.update_time}\n新增确诊: {self.confirmed_relative}\n新增无症状: {self.wzz_add}\n现有确诊: {self.cur_confirm}")
+        return (f"{self.name} {self.update_time}\n新增确诊: {self.confirmed_relative}\n现有确诊: {self.cur_confirm}")
 
     def is_today(self):
         dt = datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d')
@@ -81,16 +80,19 @@ class NewsData:
             self.data.add(Area(area))
             for city in area.get("subList",[]):
                 self.data.add(Area(city))
+        
 
         summary_data_in = json_dict['summaryDataIn']
         in_data = {
             'area': '国内',
-            'confirmedRelative'    : summary_data_in['unOverseasInputNewAdd'],
-            'asymptomaticRelative' : summary_data_in['asymptomaticLocalRelative'],
-            'curConfirm'           : int(summary_data_in['asymptomaticLocal']) + int(summary_data_in['curLocalConfirm']),
-            'updateTime'           : summary_data_in['relativeTime']
+            'confirmedRelative'    : summary_data_in.get('unOverseasInputNewAdd'),
+            'asymptomaticRelative' : summary_data_in.get('asymptomaticLocalRelative'),
+            'curConfirm'           : int(summary_data_in.get('curLocalConfirm')),
+            'updateTime'           : summary_data_in.get('relativeTime')
         }
         self.data.add(Area(in_data))
+
+            
         return True
 
 
