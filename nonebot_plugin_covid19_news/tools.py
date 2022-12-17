@@ -1,47 +1,27 @@
 import requests
 from typing import Dict
-import time
-from datetime import datetime
-import re
 
 
 class Area():
     def __init__(self, data):
-
-        def to_int(data):
-            return int(data) if data else 0
-        self.name = data['city'] if data.get('city') else data['area']
-        self.confirmed_relative = to_int(data.get('confirmedRelative'))          # 新增确诊
-        self.native_relative = to_int(data.get('nativeRelative'))                # 本土新增
-        self.wzz_add = to_int(data.get('asymptomaticRelative'))                  # 新增无症状
-        # self.local_wzz_add = to_int(data.get('asymptomaticLocalRelative'))       # 新增本土无症状
-        self.cur_confirm = to_int(data.get('curConfirm')  )                      # 现有确诊    
-        self.all_add = self.confirmed_relative + self.wzz_add
-        self.time = float(data.get('updateTime', 0))
-        self.is_updated = True if self.all_add > 0 else False
+        self.name = data['name']
+        self.today = data['today']
+        self.total = data['total']
+        self.grade = data['total'].get('grade', '风险未确认')
+        self.is_updated = self.today['isUpdated'] # 是否推送
+        self.children = data.get('children', None)
+        if self.today['confirm'] == 0:
+            self.is_updated = False
 
 
-    @property
-    def update_time(self):
-        return datetime.fromtimestamp(self.time).strftime('%Y-%m-%d %H:%M')
 
     @property
     def main_info(self):
-        return (f"{self.name} {self.update_time}\n新增确诊: {self.confirmed_relative}\n现有确诊: {self.cur_confirm}")
-
-    def is_today(self):
-        dt = datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d')
-        timeArray = time.strptime(dt, "%Y-%m-%d") # 0点时间戳
-        return self.time >= time.mktime(timeArray)
+        update = {True: '', False: '（未更新）'}
+        return (f"{self.name}{update[self.today['isUpdated']]}\n新增确诊: {self.today['confirm']}")
 
     def __eq__(self, obj):
-        return (
-            isinstance(obj, Area) and 
-            self.confirmed_relative == obj.confirmed_relative and 
-            self.wzz_add == obj.wzz_add and 
-            self.confirmed_relative == obj.confirmed_relative
-            )
-
+        return (isinstance(obj, Area) and self.today == obj.today)
 
 
 class AreaList(Dict):
@@ -50,50 +30,46 @@ class AreaList(Dict):
             self[data.name] = data
             
     def get_data(self,name):
-
         if name in ['中国', '全国']:
             name = '国内'
         elif name == '吉林市':
             ...
         elif name[-1] in ['市', '省']:
             name = name[:-1]
-        
         return self.get(name)
 
     
 class NewsData:
     def __init__(self):
         self.data = AreaList()
+        self.time = ''
         self.update_data()
 
     def update_data(self):
-        url = 'https://voice.baidu.com/act/newpneumonia/newpneumonia/?from=osari_aladin_banner'
-        response = requests.get(url)
-        html_data = response.text
-        json_str = re.findall('"component":\[(.*)\],', html_data)[0]
-        null = None
-        json_dict = eval(json_str)
-        data = json_dict['caseList']
+        url="https://api.inews.qq.com/newsqa/v1/query/inner/publish/modules/list?modules=statisGradeCityDetail,diseaseh5Shelf"
+        res = requests.get(url)
+        assert res.status_code == 200
+        data = res.json()['data']['diseaseh5Shelf']
 
-      
-        for area in data:
-            self.data.add(Area(area))
-            for city in area.get("subList",[]):
-                self.data.add(Area(city))
-        
 
-        summary_data_in = json_dict['summaryDataIn']
-        in_data = {
-            'area': '国内',
-            'confirmedRelative'    : summary_data_in.get('unOverseasInputNewAdd'),
-            'asymptomaticRelative' : summary_data_in.get('asymptomaticLocalRelative'),
-            'curConfirm'           : int(summary_data_in.get('curLocalConfirm')),
-            'updateTime'           : summary_data_in.get('relativeTime')
-        }
-        self.data.add(Area(in_data))
-
+        if data['lastUpdateTime'] != self.time:
             
-        return True
+            self.time = data['lastUpdateTime']
+            def get_Data(data):
+                
+                if isinstance(data, list):
+                    for i in data:
+                        get_Data(i)
+
+                if isinstance(data, dict):
+                    area_ = data.get('children')
+                    if area_:
+                        get_Data(area_)
+
+                    self.data.add(Area(data))
+
+            get_Data(data['areaTree'][0])
+            return True
 
 
 NewsBot = NewsData()
